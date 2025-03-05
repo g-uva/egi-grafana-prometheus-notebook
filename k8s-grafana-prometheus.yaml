@@ -56,12 +56,12 @@ metadata:
 spec:
   selector:
     app: prometheus
+  type: NodePort  # Changed from ClusterIP to NodePort for external access
   ports:
     - protocol: TCP
       port: 9090
       targetPort: 9090
-      nodePort: 9090
-  type: ClusterIP
+      nodePort: 32001
 
 ---
 apiVersion: apps/v1
@@ -79,8 +79,6 @@ spec:
       labels:
         app: grafana
     spec:
-      selector:
-        
       containers:
         - name: grafana
           image: grafana/grafana:latest
@@ -99,8 +97,9 @@ metadata:
 spec:
   selector:
     app: grafana
+  type: NodePort  # Exposing Grafana via NodePort
   ports:
     - protocol: TCP
-      port: 3000
-      targetPort: 3000
-  type: NodePort
+      port: 3000      # Internal Cluster-wide service port
+      targetPort: 3000 # Inside Grafana Pod
+      nodePort: 32000  # Externally accessible port
